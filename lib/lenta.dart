@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
 
 import 'intro.dart';
 import 'profile.dart';
@@ -15,18 +16,6 @@ import 'dialog.dart';
 import 'settings.dart';
 import 'userdata.dart';
 
-Future<UserData> loadUser() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  final user = await FirebaseAuth.instance.currentUser();
-  String userId = prefs.getString("userId");
-  final snap =
-      await Firestore.instance.collection("user").document(userId).get();
-  if (user == null || userId == null) {
-    return UserData(prefs: prefs, id: userId, auth: false, firestoreSnap: snap);
-  } else {
-    return UserData(prefs: prefs, id: userId, auth: true, firestoreSnap: snap);
-  }
-}
 
 class Burger extends StatelessWidget {
   final UserData userData;
@@ -42,7 +31,7 @@ class Burger extends StatelessWidget {
             decoration: BoxDecoration(
               image: DecorationImage(
                   image: CachedNetworkImageProvider(
-                    userData.firestoreSnap['photo'],
+                    userData.snapshot['photo'],
                   ),
                   fit: BoxFit.cover),
             ),
@@ -56,7 +45,7 @@ class Burger extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          Profile(userData.firestoreSnap, this.userData)));
+                          Profile(userData.snapshot, this.userData)));
             },
           ),
           ListTile(
@@ -340,32 +329,21 @@ class LentaBody extends StatelessWidget {
   }
 }
 
-class Lenta extends StatefulWidget {
-  @override
-  State createState() => LentaState();
-}
+class Lenta extends StatelessWidget {
+  Lenta(this.userData);
 
-class LentaState extends State<Lenta> {
+  UserData userData;
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: loadUser(),
-      builder: (context, AsyncSnapshot<UserData> snapshot) {
-        if (snapshot.hasData) {
-          final user = snapshot.data;
-          if (user.auth) {
-            return LentaBody(user);
-          } else {
-            return IntroScreen(user.prefs);
-          }
-        } else if (snapshot.hasError) {
-          return Scaffold(
-            body: Text("Error while user data loading"),
-          );
-        } else {
-          return Scaffold();
-        }
-      },
-    );
+    if (userData.authLoaded) {
+      if (userData.auth) {
+        return LentaBody(userData);
+      } else {
+        return IntroScreen(userData.prefs);
+      }
+    } else {
+      return Scaffold();
+    }
   }
 }

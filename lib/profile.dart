@@ -28,10 +28,10 @@ class ChangeProfileState extends State<ChangeProfile> {
   @override
   void initState() {
     super.initState();
-    name.text = widget.userData.firestoreSnap['name'];
-    surname.text = widget.userData.firestoreSnap['surname'];
+    name.text = widget.userData.snapshot['name'];
+    surname.text = widget.userData.snapshot['surname'];
     image = CachedNetworkImage(
-      imageUrl: widget.userData.firestoreSnap['photo'],
+      imageUrl: widget.userData.snapshot['photo'],
       height: 200.0,
       width: 200.0,
       fit: BoxFit.cover,
@@ -114,13 +114,13 @@ class ChangeProfileState extends State<ChangeProfile> {
 
                 final userRef = Firestore.instance.collection("user");
                 await userRef
-                    .document(widget.userData.firestoreSnap.documentID)
+                    .document(widget.userData.snapshot.documentID)
                     .updateData({
                   "photo": urlString != null ? urlString : blank_picture_url,
                   "name": name.text,
                   "surname": surname.text,
                 });
-                widget.userData.reloadSnap();
+                //widget.userData.reloadSnap();
                 Navigator.pop(context);
               },
               color: Colors.yellow,
@@ -140,7 +140,7 @@ class ProfileActionsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool me = userData.firestoreSnap.documentID == data.documentID;
+    bool me = userData.snapshot.documentID == data.documentID;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
@@ -169,7 +169,7 @@ class ProfileActionsRow extends StatelessWidget {
                       .updateData({
                     "chats": FieldValue.arrayUnion([data.documentID]),
                   });
-                  userData.reloadSnap();
+                  //userData.reloadSnap();
                 }
               },
             ),

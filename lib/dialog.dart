@@ -56,7 +56,7 @@ class DialogListState extends State<DialogList> {
   Future<List<DialogTile>> downloadDialogs() async {
     // TODO cache downloaded?
     List<DialogTile> dialogTiles = [];
-    var user = widget.userData.firestoreSnap;
+    var user = widget.userData.snapshot;
     for (var id in user['chats']) {
       var companion =
           await Firestore.instance.collection("user").document(id).get();
