@@ -1,0 +1,33 @@
+{
+    "start": "Hey",
+    "settings": "Settings",
+    "language": "Language",
+    "history": "History",
+    "friends": "Friends",
+    "signIn": "Sign in with Google",
+    "signOut": "Sign out",
+
+    "profile": "Profile",
+    "users": "Users",
+    "dialogs": "Dialogs",
+    "news": "News Feed",
+
+    "about": "About",
+    "about_descr": "made with ♥️ by Alisher Zhubanyshev",
+
+    "add": "Add to friends",
+    "write": "Write a message",
+    "changeProfile": "Change Profile",
+
+    "phoneNumber": "Phone number",
+    "phoneDescr": "Enter your phone number to continue",
+
+    "enterName": "Enter your name",
+    "enterSurname": "Enter your surname",
+    "changeBtn": "Change",
+
+    "newPost": "New Post",
+    "selectImage": "Select Image",
+    "postText": "Post text",
+    "post": "Post!"
+}
