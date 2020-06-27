@@ -9,7 +9,7 @@ import 'package:uuid/uuid.dart';
 import 'package:provider/provider.dart';
 
 import 'posts.dart';
-import 'dialog.dart';
+import 'dialogscreen.dart';
 import 'userdata.dart';
 import 'intro.dart';
 
@@ -192,7 +192,7 @@ class ProfileActionsRow extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            CustomDialog(userId, data.documentID, data)));
+                            DialogScreen(userId, data.documentID, data)));
               },
             ),
           ),

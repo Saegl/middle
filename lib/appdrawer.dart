@@ -5,7 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import 'users.dart';
-import 'dialog.dart';
+import 'dialoglist.dart';
 import 'settings.dart';
 import 'userdata.dart';
 import 'profile.dart';
