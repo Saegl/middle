@@ -24,27 +24,28 @@ class TimeOutScreen extends StatelessWidget {
       fontSize: 20.0,
     );
     return Scaffold(
-        body: Container(
-      margin: EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Center(child: Text("Время истекло", style: styleTitle)),
-          Text(
-            "\nВремя ввода кода истекло. Если сообщение так и не пришло попробуйте использовать другой номер телефона или повторите попытку позже\n",
-            style: styleSubtitle,
-            textAlign: TextAlign.center,
-          ),
-          RaisedButton(
-            child: Text("Попробовать снова"),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            color: Colors.yellow,
-          )
-        ],
+      body: Container(
+        margin: EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Center(child: Text("Время истекло", style: styleTitle)),
+            Text(
+              "\nВремя ввода кода истекло. Если сообщение так и не пришло попробуйте использовать другой номер телефона или повторите попытку позже\n",
+              style: styleSubtitle,
+              textAlign: TextAlign.center,
+            ),
+            RaisedButton(
+              child: Text("Попробовать снова"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              color: Colors.yellow,
+            )
+          ],
+        ),
       ),
-    ));
+    );
   }
 }
 
@@ -143,24 +144,26 @@ class RegistrationState extends State<Registration> {
   }
 }
 
-onAuthenticationSuccessful(String userId, SharedPreferences prefs, BuildContext context) async {
-    final userRef = Firestore.instance.collection("user");
-    final user = await userRef.document(userId).get();
-    await prefs.setString("userId", userId);
-    if (user == null || !user.exists) {
-      await userRef.document(userId).setData({
-        "photo": blankPictureUrl,
-        "name": '',
-        "surname": '',
-        "chats": [],
-      });
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Registration(userId)));
-    } else {
-      final userData = context.read<UserData>();
-      await userData.load();
-      Navigator.pushReplacementNamed(context, '/');
-    }
+onAuthenticationSuccessful(
+    String userId, SharedPreferences prefs, BuildContext context) async {
+  final userRef = Firestore.instance.collection("user");
+  final user = await userRef.document(userId).get();
+  await prefs.setString("userId", userId);
+  if (user == null || !user.exists) {
+    await userRef.document(userId).setData({
+      "photo": blankPictureUrl,
+      "name": '',
+      "surname": '',
+      "chats": [],
+    });
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => Registration(userId)));
+  } else {
+    final userData = context.read<UserData>();
+    await userData.load();
+    Navigator.pushReplacementNamed(context, '/');
   }
+}
 
 class IntroScreen extends StatefulWidget {
   final SharedPreferences prefs;
@@ -183,7 +186,11 @@ class IntroScreenState extends State<IntroScreen> {
     final PhoneCodeSent codeSent =
         (String verificationId, [int forceResendingToken]) async {
       // TODO create screen for code sent
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SMScodeScreen(verificationId, userId, widget.prefs)));
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  SMScodeScreen(verificationId, userId, widget.prefs)));
       print("CALL codeSent");
       print("verificationId: $verificationId");
     };

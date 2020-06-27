@@ -192,7 +192,11 @@ class ProfileActionsRow extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            DialogScreen(userId, data.documentID, data)));
+                            DialogScreen(
+                              friendId: data.documentID,
+                              friendFullName: data['name'] + data['surname'],
+                              friendPhoto: data['photo'],
+                            )));
               },
             ),
           ),

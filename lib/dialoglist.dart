@@ -9,21 +9,18 @@ import 'package:middle/userdata.dart';
 import 'dialogscreen.dart';
 
 class DialogTile extends StatelessWidget {
-  DialogTile(
-    this.name,
-    this.companionId,
-    this.photo,
-    this.companion,
-  );
+  DialogTile({
+    this.friendId,
+    this.friendFullName,
+    this.friendPhoto,
+  });
 
-  final String name;
-  final String companionId;
-  final String photo;
-  final DocumentSnapshot companion;
+  final String friendId;
+  final String friendFullName;
+  final String friendPhoto;
 
   @override
   Widget build(BuildContext context) {
-    final userData = context.watch<UserData>();
     return ListTile(
       contentPadding: EdgeInsets.only(
         left: 16.0,
@@ -36,24 +33,26 @@ class DialogTile extends StatelessWidget {
         width: 55,
         child: CircleAvatar(
           radius: 55,
-          backgroundImage: CachedNetworkImageProvider(photo),
+          backgroundImage: CachedNetworkImageProvider(friendPhoto),
         ),
       ),
-      title: Text(this.name + " " + this.companion['surname']),
+      title: Text(friendFullName),
       // TODO status
       subtitle: Text("online"),
       onTap: () async {
-        String userId = userData.id;
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                DialogScreen(userId, this.companionId, this.companion),
+            builder: (context) => DialogScreen(
+              friendId: friendId,
+              friendPhoto: friendPhoto,
+              friendFullName: friendFullName,
+            ),
           ),
         );
       },
       // TODO unread message
-      trailing: companion.documentID == "+77771234455"
+      trailing: friendId == "+77771234455"
           ? Icon(
               Icons.brightness_1,
               color: Colors.indigo,
@@ -70,10 +69,15 @@ class DialogList extends StatelessWidget {
     List<DialogTile> dialogTiles = [];
     final user = userData.snapshot;
     for (var id in user['chats']) {
-      var companion =
+      var friend =
           await Firestore.instance.collection("user").document(id).get();
       dialogTiles.add(
-          DialogTile(companion['name'], id, companion['photo'], companion));
+        DialogTile(
+          friendId: friend.documentID,
+          friendFullName: friend['name'] + friend['surname'],
+          friendPhoto: friend['photo'],
+        ),
+      );
     }
     return dialogTiles;
   }
@@ -101,32 +105,6 @@ class DialogList extends StatelessWidget {
             return Center(child: CircularProgressIndicator());
           }
         },
-      ),
-    );
-  }
-}
-
-class Message extends StatelessWidget {
-  final String text;
-  final bool pos;
-  Message(this.text, this.pos);
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        color: Colors.grey[400],
-        borderRadius: BorderRadius.circular(5.0),
-      ),
-      margin: pos
-          ? EdgeInsets.fromLTRB(50.0, 8.0, 8.0, 8.0)
-          : EdgeInsets.fromLTRB(8.0, 8.0, 50.0, 8.0),
-      child: Text(
-        this.text,
-        style: TextStyle(
-          color: Colors.white,
-        ),
-        textAlign: TextAlign.right,
       ),
     );
   }
