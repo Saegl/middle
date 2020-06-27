@@ -48,7 +48,7 @@ class TimeOutScreen extends StatelessWidget {
   }
 }
 
-String blank_picture_url =
+String blankPictureUrl =
     "https://firebasestorage.googleapis.com/v0/b/middle-5983a.appspot.com/o/blank-profile-picture.png?alt=media&token=96d03c62-f202-4012-bbd8-123bcaf1eaea";
 
 class Registration extends StatefulWidget {
@@ -128,7 +128,7 @@ class RegistrationState extends State<Registration> {
               }
               final userRef = Firestore.instance.collection("user");
               await userRef.document(widget.userId).setData({
-                "photo": urlString != null ? urlString : blank_picture_url,
+                "photo": urlString != null ? urlString : blankPictureUrl,
                 "name": name.text,
                 "surname": surname.text,
                 "chats": [widget.userId],
@@ -149,7 +149,7 @@ onAuthenticationSuccessful(String userId, SharedPreferences prefs, BuildContext 
     await prefs.setString("userId", userId);
     if (user == null || !user.exists) {
       await userRef.document(userId).setData({
-        "photo": blank_picture_url,
+        "photo": blankPictureUrl,
         "name": '',
         "surname": '',
         "chats": [],

@@ -117,7 +117,7 @@ class ChangeProfileState extends State<ChangeProfile> {
                 await userRef
                     .document(widget.userData.snapshot.documentID)
                     .updateData({
-                  "photo": urlString != null ? urlString : blank_picture_url,
+                  "photo": urlString != null ? urlString : blankPictureUrl,
                   "name": name.text,
                   "surname": surname.text,
                 });
