@@ -18,11 +18,30 @@ class AppDrawer extends StatelessWidget {
         padding: const EdgeInsets.all(0.0),
         children: <Widget>[
           _Header(),
+          ListTile(
+            title: Text("Exp"),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => Exp()));
+            },
+          ),
           _ProfileItem(),
           _UsersItem(),
           _DialogsItem(),
           _SettingsItem(),
         ],
+      ),
+    );
+  }
+}
+
+class Exp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Draggable(
+        child: Text("Dragg me"),
+        feedback: Text("Dragg me"),
+        childWhenDragging: Text("0"),
       ),
     );
   }
