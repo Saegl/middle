@@ -6,8 +6,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:uuid/uuid.dart';
+import 'package:provider/provider.dart';
 
-import 'lenta.dart';
+import 'posts.dart';
 import 'dialog.dart';
 import 'userdata.dart';
 import 'intro.dart';
@@ -160,16 +161,13 @@ class ProfileActionsRow extends StatelessWidget {
                       MaterialPageRoute(
                           builder: (context) => ChangeProfile(userData)));
                 } else {
-                  SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                  String userId = prefs.getString("userId");
                   Firestore.instance
                       .collection("user")
-                      .document(userId)
+                      .document(userData.id)
                       .updateData({
                     "chats": FieldValue.arrayUnion([data.documentID]),
                   });
-                  //userData.reloadSnap();
+                  await userData.load();
                 }
               },
             ),
@@ -205,10 +203,9 @@ class ProfileActionsRow extends StatelessWidget {
 }
 
 class Profile extends StatefulWidget {
-  Profile(this.data, this.userData);
+  Profile(this.data);
 
   final DocumentSnapshot data;
-  final UserData userData;
 
   @override
   State createState() => ProfileState();
@@ -217,6 +214,8 @@ class Profile extends StatefulWidget {
 class ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
+    // TODO remove userData
+    final userData = context.watch<UserData>();
     return Scaffold(
       body: CustomScrollView(
         slivers: <Widget>[
@@ -245,19 +244,18 @@ class ProfileState extends State<Profile> {
               if (!snapshot.hasData)
                 return SliverList(
                   delegate: SliverChildListDelegate(
-                      [ProfileActionsRow(widget.data, widget.userData)]),
+                      [ProfileActionsRow(widget.data, userData)]),
                 );
               return SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     if (index == 0) {
-                      return ProfileActionsRow(widget.data, widget.userData);
+                      return ProfileActionsRow(widget.data, userData);
                     }
-                    final DocumentSnapshot post =
+                    final DocumentSnapshot postSnapshot =
                         snapshot.data.documents[index - 1];
-                    return Post(post['photo'], post['likes'], post['author'],
-                        post['text'], false, widget.userData,
-                        key: ValueKey(post.documentID));
+                    return Post(postSnapshot, clickable: false,
+                        key: ValueKey(postSnapshot.documentID));
                   },
                   childCount: 1 + snapshot.data.documents.length,
                 ),

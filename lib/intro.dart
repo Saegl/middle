@@ -6,9 +6,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
+import 'package:middle/userdata.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
 
 import 'register.dart';
 
@@ -154,6 +156,8 @@ onAuthenticationSuccessful(String userId, SharedPreferences prefs, BuildContext 
       });
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Registration(userId)));
     } else {
+      final userData = context.read<UserData>();
+      await userData.load();
       Navigator.pushReplacementNamed(context, '/');
     }
   }
@@ -171,8 +175,6 @@ class IntroScreenState extends State<IntroScreen> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   String phoneNo;
   String userId;
-
-  
 
   Future<void> signIn() async {
     if (phoneNo == "") return;

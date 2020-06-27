@@ -1,38 +1,47 @@
+import 'package:flutter/material.dart';
+
+import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-
 import 'package:bubble/bubble.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:middle/userdata.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 class DialogTile extends StatelessWidget {
+  DialogTile(
+    this.name,
+    this.companionId,
+    this.photo,
+    this.companion,
+  );
+
   final String name;
   final String companionId;
   final String photo;
   final DocumentSnapshot companion;
-  DialogTile(this.name, this.companionId, this.photo, this.companion);
+
   @override
   Widget build(BuildContext context) {
+    final userData = context.watch<UserData>();
     return ListTile(
+      // TODO bottom padding
       contentPadding: EdgeInsets.only(left: 16.0, top: 8.0, right: 16.0),
       leading: Container(
         height: 55,
         width: 55,
         child: CircleAvatar(
-          radius: 50,
+          radius: 55,
           backgroundImage: CachedNetworkImageProvider(photo),
         ),
       ),
       title: Text(this.name + " " + this.companion['surname']),
+      // TODO status
       subtitle: Text("online"),
       onTap: () async {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        String userId = prefs.getString("userId");
+        String userId = userData.id;
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -40,23 +49,21 @@ class DialogTile extends StatelessWidget {
                     CustomDialog(userId, this.companionId, this.companion)));
       },
       // TODO unread message
-      trailing: companion.documentID == "+77771234455" ? Icon(Icons.brightness_1, color: Colors.indigo,) : null,
+      trailing: companion.documentID == "+77771234455"
+          ? Icon(
+              Icons.brightness_1,
+              color: Colors.indigo,
+            )
+          : null,
     );
   }
 }
 
-class DialogList extends StatefulWidget {
-  DialogList(this.userData);
-  final UserData userData;
-  @override
-  State createState() => DialogListState();
-}
-
-class DialogListState extends State<DialogList> {
-  Future<List<DialogTile>> downloadDialogs() async {
+class DialogList extends StatelessWidget {
+  Future<List<DialogTile>> downloadDialogs(BuildContext context, UserData userData) async {
     // TODO cache downloaded?
     List<DialogTile> dialogTiles = [];
-    var user = widget.userData.snapshot;
+    final user = userData.snapshot;
     for (var id in user['chats']) {
       var companion =
           await Firestore.instance.collection("user").document(id).get();
@@ -66,14 +73,27 @@ class DialogListState extends State<DialogList> {
     return dialogTiles;
   }
 
+  // Stream<List<DialogTile>> downloadDialogs2(BuildContext context, UserData userData) async* {
+  //   List<DialogTile> dialogTiles = [];
+  //   final user = userData.snapshot;
+  //   for (var id in user['chats']) {
+  //     var companion = 
+  //       await Firestore.instance.collection("user").document(id).get();
+  //     dialogTiles.add(
+  //         DialogTile(companion['name'], id, companion['photo'], companion));
+  //     yield dialogTiles;
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
+    final userData = context.watch<UserData>();
     return Scaffold(
       appBar: AppBar(
         title: Text("dialogs".tr()),
       ),
       body: FutureBuilder(
-        future: downloadDialogs(),
+        future: downloadDialogs(context, userData),
         builder:
             (BuildContext context, AsyncSnapshot<List<DialogTile>> snapshot) {
           if (snapshot.hasData) {
@@ -82,12 +102,26 @@ class DialogListState extends State<DialogList> {
               itemBuilder: (context, index) => snapshot.data[index],
             );
           } else if (snapshot.hasError) {
+            print(snapshot.error);
             return Text("Error while dialog downloading");
           } else {
             return Center(child: CircularProgressIndicator());
           }
         },
       ),
+      // body: StreamBuilder(
+      //   stream: downloadDialogs2(context, userData),
+      //   builder: (context, snapshot) {
+      //     if (snapshot.hasData) {
+      //       return ListView.builder(
+      //         itemCount: snapshot.data.length,
+      //         itemBuilder: (context, index) => snapshot.data[index],
+      //       );
+      //     } else {
+      //       return Container();
+      //     }
+      //   },
+      // ),
     );
   }
 }

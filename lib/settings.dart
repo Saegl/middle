@@ -1,15 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
 
 import 'intro.dart';
 import 'userdata.dart';
 
 class Settings extends StatelessWidget {
-  Settings(this._userData);
-
-  final UserData _userData;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,8 +15,8 @@ class Settings extends StatelessWidget {
       ),
       body: ListView(
         children: <Widget>[
-          ChangeLang(_userData),
-          SignOut(_userData),
+          ChangeLang(),
+          SignOut(),
           About()
         ],
       ),
@@ -28,16 +25,12 @@ class Settings extends StatelessWidget {
 }
 
 class ChangeLang extends StatefulWidget {
-  ChangeLang(this._userData);
-
-  final UserData _userData;
-
   @override
   State createState() => _ChangeLangState();
 }
 
 class _ChangeLangState extends State<ChangeLang> {
-  String dropvalue = 'English';
+  String dropvalue;
   Map<String, Locale> _locale = {
     "Русский": Locale('ru', 'RU'),
     "English": Locale('en', 'US'),
@@ -48,11 +41,6 @@ class _ChangeLangState extends State<ChangeLang> {
       dropvalue = lang;
     });
     context.locale = _locale[dropvalue];
-    await widget._userData.prefs.setBool("customLang", true);
-    await widget._userData.prefs
-        .setString('langCode', context.locale.languageCode);
-    await widget._userData.prefs
-        .setString('countryCode', context.locale.countryCode);
   }
 
   @override
@@ -77,14 +65,10 @@ class _ChangeLangState extends State<ChangeLang> {
 }
 
 class SignOut extends StatelessWidget {
-  SignOut(this._userData);
-
-  final UserData _userData;
-
   Function _signOut(BuildContext context) {
     return () async {
+      UserData _userData = context.read<UserData>();
       FirebaseAuth.instance.signOut();
-      _userData.prefs.remove("userId");
       Navigator.pop(context);
       Navigator.pushReplacement(context,
           MaterialPageRoute(builder: (context) => IntroScreen(_userData.prefs)));

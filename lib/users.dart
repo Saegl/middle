@@ -30,7 +30,7 @@ class FriendTile extends StatelessWidget {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => Profile(data, this.userData)));
+                  builder: (context) => Profile(data)));
         },
       ),
     );
