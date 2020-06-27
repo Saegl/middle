@@ -65,6 +65,7 @@ class ProfileActionsRow extends StatelessWidget {
               color: Colors.yellow,
               child: Text("write".tr()),
               onPressed: () async {
+                // TODO delete SharedPreferences
                 SharedPreferences prefs = await SharedPreferences.getInstance();
                 String userId = prefs.getString("userId");
                 Firestore.instance

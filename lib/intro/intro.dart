@@ -151,7 +151,6 @@ class IntroScreenState extends State<IntroScreen> {
     // TODO move this functions to methods
     final PhoneCodeSent codeSent =
         (String verificationId, [int forceResendingToken]) async {
-      // TODO create screen for code sent
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(

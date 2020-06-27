@@ -74,7 +74,7 @@ class DialogList extends StatelessWidget {
       dialogTiles.add(
         DialogTile(
           friendId: friend.documentID,
-          friendFullName: friend['name'] + friend['surname'],
+          friendFullName: friend['name'] + " " + friend['surname'],
           friendPhoto: friend['photo'],
         ),
       );

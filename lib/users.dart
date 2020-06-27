@@ -8,10 +8,11 @@ import 'package:middle/userdata.dart';
 class FriendTile extends StatelessWidget {
   FriendTile(this.name, this.data, this.userData);
 
+  // TODO delete data and userData
   final String name;
   final DocumentSnapshot data;
   final UserData userData;
-  
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -28,9 +29,11 @@ class FriendTile extends StatelessWidget {
         title: Text(this.name),
         onTap: () {
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => Profile(data)));
+            context,
+            MaterialPageRoute(
+              builder: (context) => Profile(data),
+            ),
+          );
         },
       ),
     );
@@ -40,6 +43,7 @@ class FriendTile extends StatelessWidget {
 class FriendList extends StatelessWidget {
   FriendList(this.userData);
 
+  // TODO delete userData
   final UserData userData;
 
   @override

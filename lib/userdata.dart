@@ -18,6 +18,7 @@ class UserData with ChangeNotifier {
   Future<void> load() async {
     prefs = await SharedPreferences.getInstance();
     id = prefs.getString("userId");
+    // TODO logging library
     print("UserId: $id");
     snapshot = await Firestore.instance.collection("user").document(id).get();
     final user = await FirebaseAuth.instance.currentUser();
