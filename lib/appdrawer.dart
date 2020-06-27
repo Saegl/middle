@@ -5,10 +5,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import 'users.dart';
-import 'dialoglist.dart';
+import 'dialog/dialoglist.dart';
 import 'settings.dart';
 import 'userdata.dart';
-import 'profile.dart';
+import 'profile/profile.dart';
 
 class AppDrawer extends StatelessWidget {
   @override

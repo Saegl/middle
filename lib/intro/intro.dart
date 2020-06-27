@@ -1,7 +1,8 @@
+import 'package:flutter/material.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:intro_slider/intro_slider.dart';
@@ -13,41 +14,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 
 import 'register.dart';
-
-class TimeOutScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final styleTitle = TextStyle(
-      fontSize: 26.0,
-    );
-    final styleSubtitle = TextStyle(
-      fontSize: 20.0,
-    );
-    return Scaffold(
-      body: Container(
-        margin: EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Center(child: Text("Время истекло", style: styleTitle)),
-            Text(
-              "\nВремя ввода кода истекло. Если сообщение так и не пришло попробуйте использовать другой номер телефона или повторите попытку позже\n",
-              style: styleSubtitle,
-              textAlign: TextAlign.center,
-            ),
-            RaisedButton(
-              child: Text("Попробовать снова"),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              color: Colors.yellow,
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 String blankPictureUrl =
     "https://firebasestorage.googleapis.com/v0/b/middle-5983a.appspot.com/o/blank-profile-picture.png?alt=media&token=96d03c62-f202-4012-bbd8-123bcaf1eaea";

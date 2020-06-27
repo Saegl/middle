@@ -6,8 +6,8 @@ import 'package:middle/appdrawer.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 
-import 'intro.dart';
-import 'profile.dart';
+import 'intro/intro.dart';
+import 'profile/profile.dart';
 import 'userdata.dart';
 import 'postcreator.dart';
 

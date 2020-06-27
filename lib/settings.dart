@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 
-import 'intro.dart';
+import 'intro/intro.dart';
 import 'userdata.dart';
 
 class Settings extends StatelessWidget {
