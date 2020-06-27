@@ -31,6 +31,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: "Middle",
       theme: ThemeData(
+        // platform: TargetPlatform.iOS,
         primaryColor: Colors.yellow,
         accentColor: Colors.orange[100],
       ),

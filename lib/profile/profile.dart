@@ -94,8 +94,9 @@ class ProfileActionsRow extends StatelessWidget {
 }
 
 class Profile extends StatefulWidget {
-  Profile(this.data);
+  Profile(this.tag, this.data);
 
+  final int tag;
   final DocumentSnapshot data;
 
   @override
@@ -112,8 +113,8 @@ class ProfileState extends State<Profile> {
         slivers: <Widget>[
           SliverAppBar(
             iconTheme: IconThemeData(color: Colors.white),
-            backgroundColor: Colors.orange[400],
-            pinned: true,
+            backgroundColor: Colors.transparent,
+            pinned: false,
             floating: false,
             snap: false,
             expandedHeight: 200.0,
@@ -122,8 +123,11 @@ class ProfileState extends State<Profile> {
                 widget.data['name'],
                 style: TextStyle(color: Colors.white),
               ),
-              background: CachedNetworkImage(
-                  imageUrl: widget.data['photo'], fit: BoxFit.cover),
+              background: Hero(
+                tag: widget.tag,
+                child: CachedNetworkImage(
+                    imageUrl: widget.data['photo'], fit: BoxFit.cover),
+              ),
             ),
           ),
           StreamBuilder(
@@ -138,7 +142,7 @@ class ProfileState extends State<Profile> {
                     ProfileActionsRow(
                       me: userData.snapshot.documentID ==
                           widget.data.documentID,
-                      ownerId: widget.data['photo'],
+                      ownerId: widget.data.documentID,
                       ownerFullName:
                           widget.data['name'] + widget.data['surname'],
                       ownerPhoto: widget.data['photo'],
@@ -152,7 +156,7 @@ class ProfileState extends State<Profile> {
                       return ProfileActionsRow(
                         me: userData.snapshot.documentID ==
                             widget.data.documentID,
-                        ownerId: widget.data['photo'],
+                        ownerId: widget.data.documentID,
                         ownerFullName:
                             widget.data['name'] + widget.data['surname'],
                         ownerPhoto: widget.data['photo'],
@@ -160,9 +164,12 @@ class ProfileState extends State<Profile> {
                     }
                     final DocumentSnapshot postSnapshot =
                         snapshot.data.documents[index - 1];
-                    return Post(postSnapshot,
-                        clickable: false,
-                        key: ValueKey(postSnapshot.documentID));
+                    return Post(
+                      index,
+                      postSnapshot,
+                      clickable: false,
+                      key: ValueKey(postSnapshot.documentID),
+                    );
                   },
                   childCount: 1 + snapshot.data.documents.length,
                 ),

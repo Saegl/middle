@@ -49,6 +49,7 @@ class Posts extends StatelessWidget {
               final DocumentSnapshot postSnapshot =
                   snapshot.data.documents[index];
               return Post(
+                index,
                 postSnapshot,
                 clickable: true,
                 key: ValueKey(postSnapshot.documentID),
@@ -70,6 +71,7 @@ class Posts extends StatelessWidget {
 
 class Post extends StatelessWidget {
   Post(
+    this.index,
     DocumentSnapshot postSnapshot, {
     @required this.clickable,
     Key key,
@@ -79,6 +81,7 @@ class Post extends StatelessWidget {
         this.text = postSnapshot['text'],
         super(key: key);
 
+  final int index;
   // AuthorTile data
   final String author;
   final bool clickable;
@@ -91,7 +94,7 @@ class Post extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        AuthorTile(author, clickable),
+        AuthorTile(index, author, clickable),
         Card(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -119,7 +122,9 @@ class Post extends StatelessWidget {
 }
 
 class AuthorTile extends StatelessWidget {
-  AuthorTile(this.author, this.clickable);
+  AuthorTile(this.index, this.author, this.clickable);
+
+  final int index;
   final String author;
   final bool clickable;
   @override
@@ -135,12 +140,22 @@ class AuthorTile extends StatelessWidget {
             leading: Container(
               height: 55,
               width: 55,
-              child: CircleAvatar(
-                radius: 50,
-                backgroundImage: CachedNetworkImageProvider(
-                  author['photo'],
-                ),
-              ),
+              child: clickable
+                  ? Hero(
+                      tag: index,
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundImage: CachedNetworkImageProvider(
+                          author['photo'],
+                        ),
+                      ),
+                    )
+                  : CircleAvatar(
+                      radius: 50,
+                      backgroundImage: CachedNetworkImageProvider(
+                        author['photo'],
+                      ),
+                    ),
             ),
             title: Text(author['name']),
             onTap: () {
@@ -148,7 +163,7 @@ class AuthorTile extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Profile(author),
+                    builder: (context) => Profile(index, author),
                   ),
                 );
             },

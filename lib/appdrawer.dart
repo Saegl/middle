@@ -58,7 +58,7 @@ class _ProfileItem extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Profile(snap),
+            builder: (context) => Profile(-1, snap),
           ),
         );
       },

@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -7,6 +9,61 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:middle/userdata.dart';
 
 import 'dialogscreen.dart';
+
+class DialogList extends StatelessWidget {
+  Future<List<DialogTile>> downloadDialogs(
+      BuildContext context, UserData userData) async {
+    // TODO cache downloaded?
+    List<DialogTile> dialogTiles = [];
+    final user = userData.snapshot;
+    for (var id in user['chats']) {
+      try {
+        var friend =
+            await Firestore.instance.collection("user").document(id).get();
+        dialogTiles.add(
+          DialogTile(
+            friendId: friend.documentID,
+            friendFullName: friend['name'] + " " + friend['surname'],
+            friendPhoto: friend['photo'],
+          ),
+        );
+      } on PlatformException {
+        // TODO logging
+        print("DialogList: Exception occured while user loading");
+        print("userId: $id");
+        continue;
+      }
+    }
+    return dialogTiles;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final userData = context.watch<UserData>();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("dialogs".tr()),
+      ),
+      body: FutureBuilder(
+        future: downloadDialogs(context, userData),
+        builder:
+            (BuildContext context, AsyncSnapshot<List<DialogTile>> snapshot) {
+          if (snapshot.hasData) {
+            return ListView.builder(
+              itemCount: snapshot.data.length,
+              itemBuilder: (context, index) => snapshot.data[index],
+            );
+          } else if (snapshot.hasError) {
+            print(snapshot.error);
+            return Text("Error while dialog downloading");
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
+    );
+  }
+}
 
 class DialogTile extends StatelessWidget {
   DialogTile({
@@ -40,6 +97,7 @@ class DialogTile extends StatelessWidget {
       // TODO status
       subtitle: Text("online"),
       onTap: () async {
+        // TODO slide page route
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -58,54 +116,6 @@ class DialogTile extends StatelessWidget {
               color: Colors.indigo,
             )
           : null,
-    );
-  }
-}
-
-class DialogList extends StatelessWidget {
-  Future<List<DialogTile>> downloadDialogs(
-      BuildContext context, UserData userData) async {
-    // TODO cache downloaded?
-    List<DialogTile> dialogTiles = [];
-    final user = userData.snapshot;
-    for (var id in user['chats']) {
-      var friend =
-          await Firestore.instance.collection("user").document(id).get();
-      dialogTiles.add(
-        DialogTile(
-          friendId: friend.documentID,
-          friendFullName: friend['name'] + " " + friend['surname'],
-          friendPhoto: friend['photo'],
-        ),
-      );
-    }
-    return dialogTiles;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final userData = context.watch<UserData>();
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("dialogs".tr()),
-      ),
-      body: FutureBuilder(
-        future: downloadDialogs(context, userData),
-        builder:
-            (BuildContext context, AsyncSnapshot<List<DialogTile>> snapshot) {
-          if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data.length,
-              itemBuilder: (context, index) => snapshot.data[index],
-            );
-          } else if (snapshot.hasError) {
-            print(snapshot.error);
-            return Text("Error while dialog downloading");
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
     );
   }
 }
