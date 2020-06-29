@@ -37,7 +37,7 @@ class DialogScreen extends StatelessWidget {
         children: <Widget>[
           //PhotoUploadingTask(),
           MessageList(ref),
-          BottomActionRow(ref),
+          BottomActionRow(ref, friendId),
         ],
       ),
     );
@@ -236,9 +236,10 @@ class Message extends StatelessWidget {
 }
 
 class BottomActionRow extends StatelessWidget {
-  BottomActionRow(this.ref);
+  BottomActionRow(this.ref, this.friendId);
 
   final String ref;
+  final String friendId;
   final textEdit = TextEditingController();
 
   @override
@@ -269,13 +270,33 @@ class BottomActionRow extends StatelessWidget {
         IconButton(
           icon: Icon(Icons.arrow_forward_ios),
           onPressed: () async {
+            if (friendId == '+77025387955') {
+              Firestore.instance.collection("messages").add({
+              "text": textEdit.text,
+              "author": userId,
+              "viewed": false,
+              "created": Timestamp.now(),
+              "ref": ref,
+              "receiver": "eEYv_vIizZM:APA91bEbhcUcI-UM4QJLx02I5alwu01nDvXVNDudJnNOVKCva6TCw6yUTpZuEXzHTh53Ag6O-fWZc5CQ4SkyDdIHSEmgqam9tascYsoqw-PokxNXaQMN8nWNzQLI64sxsbmrtt5Hyoj5",
+            });  
+            } else if (friendId == "+77771780001")
             Firestore.instance.collection("messages").add({
               "text": textEdit.text,
               "author": userId,
               "viewed": false,
               "created": Timestamp.now(),
               "ref": ref,
+              "receiver": "dFS9Upk_-fg:APA91bFEbWw5vG1KboywkEp2mWQ9vnuNeOkbNtcTlNSq0YOKndhU0P3bZNCf_AoJsE5PiW5WTJiWUOFqcPndk29Sc596MzdjfR0lWmXnd_FOObIfQNptjaFIwfJWwSZMPd7b1qQKSlzU",
             });
+            else {
+              Firestore.instance.collection("messages").add({
+              "text": textEdit.text,
+              "author": userId,
+              "viewed": false,
+              "created": Timestamp.now(),
+              "ref": ref,
+            });
+            }
             textEdit.clear();
           },
         )

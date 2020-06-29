@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -38,10 +39,16 @@ class Exp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Draggable(
-        child: Text("Dragg me"),
-        feedback: Text("Dragg me"),
-        childWhenDragging: Text("0"),
+      child: FutureBuilder(
+        future: FirebaseMessaging().getToken(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            print(snapshot.data);
+            return Text(snapshot.data);
+          } else {
+            return Text("Loading");
+          }
+        },
       ),
     );
   }
