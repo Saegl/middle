@@ -79,7 +79,7 @@ class DialogTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      contentPadding: EdgeInsets.only(
+      contentPadding: const EdgeInsets.only(
         left: 16.0,
         top: 4.0,
         right: 16.0,

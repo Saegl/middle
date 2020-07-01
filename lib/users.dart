@@ -1,44 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-import 'package:middle/profile/profile.dart';
-import 'package:middle/userdata.dart';
-
-class FriendTile extends StatelessWidget {
-  FriendTile(this.name, this.data, this.userData);
-
-  // TODO delete data and userData
-  final String name;
-  final DocumentSnapshot data;
-  final UserData userData;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 4.0),
-      child: ListTile(
-        leading: Container(
-          height: 55,
-          width: 55,
-          child: CircleAvatar(
-            radius: 50,
-            backgroundImage: NetworkImage(data['photo']),
-          ),
-        ),
-        title: Text(this.name),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Profile(-1, data),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
+import 'profile/profile.dart';
+import 'userdata.dart';
 
 class FriendList extends StatelessWidget {
   FriendList(this.userData);
@@ -60,7 +27,7 @@ class FriendList extends StatelessWidget {
           return ListView.builder(
             itemCount: snapshot.data.documents.length,
             itemBuilder: (context, index) {
-              return FriendTile(
+              return UserTile(
                 snapshot.data.documents[index]['name'] +
                     " " +
                     snapshot.data.documents[index]['surname'],
@@ -75,4 +42,40 @@ class FriendList extends StatelessWidget {
   }
 }
 
-// Git test
+class UserTile extends StatelessWidget {
+  UserTile(this.name, this.data, this.userData);
+
+  // TODO delete data and userData
+  final String name;
+  final DocumentSnapshot data;
+  final UserData userData;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: const EdgeInsets.only(
+        left: 16.0,
+        top: 8.0,
+        right: 16.0,
+        bottom: 8.0,
+      ),
+      leading: Container(
+        height: 55,
+        width: 55,
+        child: CircleAvatar(
+          radius: 50,
+          backgroundImage: CachedNetworkImageProvider(data['photo']),
+        ),
+      ),
+      title: Text(this.name),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Profile(-1, data),
+          ),
+        );
+      },
+    );
+  }
+}
