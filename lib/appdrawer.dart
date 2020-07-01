@@ -95,8 +95,6 @@ class _ProfileItem extends StatelessWidget {
 class _UsersItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // TODO remove userData
-    final userData = context.watch<UserData>();
     return ListTile(
       leading: Icon(Icons.group),
       title: Text('users'.tr()),
@@ -105,7 +103,7 @@ class _UsersItem extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => FriendList(userData),
+            builder: (context) => FriendList(),
           ),
         );
       },
@@ -116,8 +114,6 @@ class _UsersItem extends StatelessWidget {
 class _DialogsItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // TODO remove userData
-    final userData = context.watch<UserData>();
     return ListTile(
       leading: Icon(Icons.bubble_chart),
       title: Text('dialogs'.tr()),

@@ -5,13 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import 'profile/profile.dart';
-import 'userdata.dart';
 
 class FriendList extends StatelessWidget {
-  FriendList(this.userData);
-
-  // TODO delete userData
-  final UserData userData;
+  FriendList();
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +28,6 @@ class FriendList extends StatelessWidget {
                     " " +
                     snapshot.data.documents[index]['surname'],
                 snapshot.data.documents[index],
-                this.userData,
               );
             },
           );
@@ -43,12 +38,10 @@ class FriendList extends StatelessWidget {
 }
 
 class UserTile extends StatelessWidget {
-  UserTile(this.name, this.data, this.userData);
+  UserTile(this.name, this.ownerData);
 
-  // TODO delete data and userData
   final String name;
-  final DocumentSnapshot data;
-  final UserData userData;
+  final DocumentSnapshot ownerData;
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +57,7 @@ class UserTile extends StatelessWidget {
         width: 55,
         child: CircleAvatar(
           radius: 50,
-          backgroundImage: CachedNetworkImageProvider(data['photo']),
+          backgroundImage: CachedNetworkImageProvider(ownerData['photo']),
         ),
       ),
       title: Text(this.name),
@@ -72,7 +65,7 @@ class UserTile extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Profile(-1, data),
+            builder: (context) => Profile(-1, ownerData),
           ),
         );
       },

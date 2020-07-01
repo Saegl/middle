@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 
@@ -10,6 +9,94 @@ import '../posts.dart';
 import '../dialog/dialogscreen.dart';
 import '../userdata.dart';
 import 'changeprofile.dart';
+
+class Profile extends StatefulWidget {
+  Profile(this.heroTag, this.ownerData);
+
+  final int heroTag;
+  final DocumentSnapshot ownerData;
+
+  @override
+  State createState() => ProfileState();
+}
+
+class ProfileState extends State<Profile> {
+  @override
+  Widget build(BuildContext context) {
+    final userData = context.watch<UserData>();
+    return Scaffold(
+      body: CustomScrollView(
+        slivers: <Widget>[
+          SliverAppBar(
+            iconTheme: IconThemeData(color: Colors.white),
+            backgroundColor: Colors.transparent,
+            pinned: false,
+            floating: false,
+            snap: false,
+            expandedHeight: 200.0,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(
+                widget.ownerData['name'],
+                style: TextStyle(color: Colors.white),
+              ),
+              background: Hero(
+                tag: widget.heroTag,
+                child: CachedNetworkImage(
+                    imageUrl: widget.ownerData['photo'], fit: BoxFit.cover),
+              ),
+            ),
+          ),
+          StreamBuilder(
+            stream: Firestore.instance
+                .collection("lenta")
+                .where("author", isEqualTo: widget.ownerData.documentID)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData)
+                return SliverList(
+                  delegate: SliverChildListDelegate([
+                    ProfileActionsRow(
+                      me: userData.snapshot.documentID ==
+                          widget.ownerData.documentID,
+                      ownerId: widget.ownerData.documentID,
+                      ownerFullName:
+                          widget.ownerData['name'] + widget.ownerData['surname'],
+                      ownerPhoto: widget.ownerData['photo'],
+                    )
+                  ]),
+                );
+              return SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    if (index == 0) {
+                      return ProfileActionsRow(
+                        me: userData.snapshot.documentID ==
+                            widget.ownerData.documentID,
+                        ownerId: widget.ownerData.documentID,
+                        ownerFullName:
+                            widget.ownerData['name'] + widget.ownerData['surname'],
+                        ownerPhoto: widget.ownerData['photo'],
+                      );
+                    }
+                    final DocumentSnapshot postSnapshot =
+                        snapshot.data.documents[index - 1];
+                    return Post(
+                      index,
+                      postSnapshot,
+                      clickable: false,
+                      key: ValueKey(postSnapshot.documentID),
+                    );
+                  },
+                  childCount: 1 + snapshot.data.documents.length,
+                ),
+              );
+            },
+          )
+        ],
+      ),
+    );
+  }
+}
 
 class ProfileActionsRow extends StatelessWidget {
   ProfileActionsRow({
@@ -65,9 +152,7 @@ class ProfileActionsRow extends StatelessWidget {
               color: Colors.yellow,
               child: Text("write".tr()),
               onPressed: () async {
-                // TODO delete SharedPreferences
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                String userId = prefs.getString("userId");
+                String userId = context.read<UserData>().id;
                 Firestore.instance
                     .collection("user")
                     .document(userId)
@@ -89,95 +174,6 @@ class ProfileActionsRow extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class Profile extends StatefulWidget {
-  Profile(this.tag, this.data);
-
-  final int tag;
-  final DocumentSnapshot data;
-
-  @override
-  State createState() => ProfileState();
-}
-
-class ProfileState extends State<Profile> {
-  @override
-  Widget build(BuildContext context) {
-    // TODO remove userData
-    final userData = context.watch<UserData>();
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: <Widget>[
-          SliverAppBar(
-            iconTheme: IconThemeData(color: Colors.white),
-            backgroundColor: Colors.transparent,
-            pinned: false,
-            floating: false,
-            snap: false,
-            expandedHeight: 200.0,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                widget.data['name'],
-                style: TextStyle(color: Colors.white),
-              ),
-              background: Hero(
-                tag: widget.tag,
-                child: CachedNetworkImage(
-                    imageUrl: widget.data['photo'], fit: BoxFit.cover),
-              ),
-            ),
-          ),
-          StreamBuilder(
-            stream: Firestore.instance
-                .collection("lenta")
-                .where("author", isEqualTo: widget.data.documentID)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData)
-                return SliverList(
-                  delegate: SliverChildListDelegate([
-                    ProfileActionsRow(
-                      me: userData.snapshot.documentID ==
-                          widget.data.documentID,
-                      ownerId: widget.data.documentID,
-                      ownerFullName:
-                          widget.data['name'] + widget.data['surname'],
-                      ownerPhoto: widget.data['photo'],
-                    )
-                  ]),
-                );
-              return SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    if (index == 0) {
-                      return ProfileActionsRow(
-                        me: userData.snapshot.documentID ==
-                            widget.data.documentID,
-                        ownerId: widget.data.documentID,
-                        ownerFullName:
-                            widget.data['name'] + widget.data['surname'],
-                        ownerPhoto: widget.data['photo'],
-                      );
-                    }
-                    final DocumentSnapshot postSnapshot =
-                        snapshot.data.documents[index - 1];
-                    return Post(
-                      index,
-                      postSnapshot,
-                      clickable: false,
-                      key: ValueKey(postSnapshot.documentID),
-                    );
-                  },
-                  childCount: 1 + snapshot.data.documents.length,
-                ),
-              );
-            },
-          )
-        ],
-      ),
     );
   }
 }
