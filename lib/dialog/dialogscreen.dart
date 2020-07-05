@@ -172,11 +172,18 @@ class MessageList extends StatelessWidget {
               reverse: true,
               itemCount: snapshot.data.documents.length,
               itemBuilder: (context, index) {
-                var message = snapshot.data.documents[index];
+                final DocumentSnapshot message = snapshot.data.documents[index];
+                final me = userId == message['author'];
+                if (!me && !message['viewed']) {
+                  message.reference.updateData({
+                    "viewed": true,
+                  });
+                }
                 return Message(
                   date: message["created"].toDate(),
-                  me: userId == message['author'],
+                  me: me,
                   text: message['text'],
+                  viewed: message['viewed'],
                 );
               },
             );
@@ -192,11 +199,13 @@ class Message extends StatelessWidget {
     @required this.date,
     @required this.me,
     @required this.text,
+    @required this.viewed,
   });
 
   final DateTime date;
   final bool me;
   final String text;
+  final bool viewed;
 
   @override
   Widget build(BuildContext context) {
@@ -222,12 +231,29 @@ class Message extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: <Widget>[
           Text(text),
-          Text(
-            "${date.hour}:${date.minute}",
-            style: TextStyle(
-              color: Colors.black54,
-              fontSize: 12.0,
-            ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                "${date.hour}:${date.minute} ",
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 12.0,
+                ),
+              ),
+              if (!me && viewed)
+              Icon(
+                Icons.done_all,
+                size: 12.0,
+                color: Colors.blue,
+              ),
+              if (!me && !viewed)
+              Icon(
+                Icons.done,
+                size: 12.0,
+                color: Colors.black,
+              )
+            ],
           ),
         ],
       ),
@@ -270,32 +296,35 @@ class BottomActionRow extends StatelessWidget {
         IconButton(
           icon: Icon(Icons.arrow_forward_ios),
           onPressed: () async {
+            // TODO notification for all users
             if (friendId == '+77025387955') {
               Firestore.instance.collection("messages").add({
-              "text": textEdit.text,
-              "author": userId,
-              "viewed": false,
-              "created": Timestamp.now(),
-              "ref": ref,
-              "receiver": "eEYv_vIizZM:APA91bEbhcUcI-UM4QJLx02I5alwu01nDvXVNDudJnNOVKCva6TCw6yUTpZuEXzHTh53Ag6O-fWZc5CQ4SkyDdIHSEmgqam9tascYsoqw-PokxNXaQMN8nWNzQLI64sxsbmrtt5Hyoj5",
-            });  
+                "text": textEdit.text,
+                "author": userId,
+                "viewed": false,
+                "created": Timestamp.now(),
+                "ref": ref,
+                "receiver":
+                    "eEYv_vIizZM:APA91bEbhcUcI-UM4QJLx02I5alwu01nDvXVNDudJnNOVKCva6TCw6yUTpZuEXzHTh53Ag6O-fWZc5CQ4SkyDdIHSEmgqam9tascYsoqw-PokxNXaQMN8nWNzQLI64sxsbmrtt5Hyoj5",
+              });
             } else if (friendId == "+77771780001")
-            Firestore.instance.collection("messages").add({
-              "text": textEdit.text,
-              "author": userId,
-              "viewed": false,
-              "created": Timestamp.now(),
-              "ref": ref,
-              "receiver": "dFS9Upk_-fg:APA91bFEbWw5vG1KboywkEp2mWQ9vnuNeOkbNtcTlNSq0YOKndhU0P3bZNCf_AoJsE5PiW5WTJiWUOFqcPndk29Sc596MzdjfR0lWmXnd_FOObIfQNptjaFIwfJWwSZMPd7b1qQKSlzU",
-            });
+              Firestore.instance.collection("messages").add({
+                "text": textEdit.text,
+                "author": userId,
+                "viewed": false,
+                "created": Timestamp.now(),
+                "ref": ref,
+                "receiver":
+                    "dFS9Upk_-fg:APA91bFEbWw5vG1KboywkEp2mWQ9vnuNeOkbNtcTlNSq0YOKndhU0P3bZNCf_AoJsE5PiW5WTJiWUOFqcPndk29Sc596MzdjfR0lWmXnd_FOObIfQNptjaFIwfJWwSZMPd7b1qQKSlzU",
+              });
             else {
               Firestore.instance.collection("messages").add({
-              "text": textEdit.text,
-              "author": userId,
-              "viewed": false,
-              "created": Timestamp.now(),
-              "ref": ref,
-            });
+                "text": textEdit.text,
+                "author": userId,
+                "viewed": false,
+                "created": Timestamp.now(),
+                "ref": ref,
+              });
             }
             textEdit.clear();
           },
