@@ -10,6 +10,7 @@ import 'intro/intro.dart';
 import 'profile/profile.dart';
 import 'userdata.dart';
 import 'postcreator.dart';
+import 'postview.dart';
 
 const blankProfilePicture = AssetImage("images/blank-profile-picture.png");
 
@@ -31,7 +32,13 @@ class UserLoading extends StatelessWidget {
 class Posts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var dbRef = Firestore.instance.collection("lenta").snapshots();
+    var dbRef = Firestore.instance
+        .collection("lenta")
+        // .where("author", whereIn: [
+        //   "+77771780001",
+        //   "+77771234455",
+        // ])
+        .snapshots();
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -72,7 +79,7 @@ class Posts extends StatelessWidget {
 class Post extends StatelessWidget {
   Post(
     this.index,
-    DocumentSnapshot postSnapshot, {
+    this.postSnapshot, {
     @required this.clickable,
     Key key,
   })  : this.photo = postSnapshot['photo'],
@@ -82,6 +89,7 @@ class Post extends StatelessWidget {
         super(key: key);
 
   final int index;
+  final DocumentSnapshot postSnapshot;
   // AuthorTile data
   final String author;
   final bool clickable;
@@ -96,24 +104,23 @@ class Post extends StatelessWidget {
       children: <Widget>[
         AuthorTile(index, author, clickable),
         Card(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: <Widget>[
-                CachedNetworkImage(
-                  imageUrl: photo,
-                  height: 400.0,
-                  fit: BoxFit.cover,
-                ),
-                ListTile(
-                  title: Text(text),
-                  leading: Icon(
-                    Icons.favorite,
-                    color: Colors.red,
+          child: InkWell(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: <Widget>[
+                  CachedNetworkImage(
+                    imageUrl: photo,
+                    height: 400.0,
+                    fit: BoxFit.cover,
                   ),
-                )
-              ],
+                  PostDescription(postSnapshot),
+                ],
+              ),
             ),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => PostView(postSnapshot)));
+            },
           ),
         )
       ],

@@ -19,12 +19,12 @@ class AppDrawer extends StatelessWidget {
         padding: const EdgeInsets.all(0.0),
         children: <Widget>[
           _Header(),
-          ListTile(
-            title: Text("Exp"),
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => Exp()));
-            },
-          ),
+          // ListTile(
+          //   title: Text("Exp"),
+          //   onTap: () {
+          //     Navigator.push(context, MaterialPageRoute(builder: (context) => Exp()));
+          //   },
+          // ),
           _ProfileItem(),
           _UsersItem(),
           _DialogsItem(),
